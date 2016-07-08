@@ -1,7 +1,7 @@
 Bigeagle Bot
 ============
 
-A bot to locate Bigeagle according to [https://status.bigeagle.me/]().
+A bot to locate Bigeagle according to https://status.bigeagle.me/.
 
 Install
 -------
