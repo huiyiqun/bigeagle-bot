@@ -5,16 +5,19 @@ from argparse import ArgumentParser
 from bs4 import BeautifulSoup
 from telegram.ext import Updater, CommandHandler
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 parser = ArgumentParser(description='A bot to locate Bigeagle')
 parser.add_argument('token', help='Token from BotFather')
 
 arg = parser.parse_args()
 
+
 def start(bot, update):
     bot.sendMessage(update.message.chat_id, text='Hello World!')
+
 
 def where(bot, update):
     page = requests.get('https://status.bigeagle.me/').text
