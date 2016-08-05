@@ -10,7 +10,9 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 parser = ArgumentParser(description='A bot to locate Bigeagle')
-parser.add_argument('token', help='Token from BotFather')
+parser.add_argument('token', help='token from BotFather')
+parser.add_argument('--url', help='url to query',
+                    default='https://status.bigeagle.me/')
 
 arg = parser.parse_args()
 last_place = None
@@ -18,7 +20,7 @@ who_care = set()
 
 
 def locate():
-    page = requests.get('https://status.bigeagle.me/').text
+    page = requests.get(arg.url).text
     soup = BeautifulSoup(page, 'html.parser')
     for div in soup.body.div.div.div.find_all('div'):
         if div.h1.contents[0] == "在呢！":
