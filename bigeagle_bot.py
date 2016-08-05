@@ -3,7 +3,7 @@ import requests
 import logging
 from argparse import ArgumentParser
 from bs4 import BeautifulSoup
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, Job
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -26,7 +26,7 @@ def locate():
             return place
 
 
-def whether_move(bot):
+def whether_move(bot, job):
     place = locate()
     global last_place
     if place != last_place:
@@ -69,7 +69,8 @@ updater = Updater(arg.token)
 updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('where', where))
 updater.dispatcher.add_handler(CommandHandler('care', care))
-updater.job_queue.put(whether_move, 60.0, next_t=0.0)
+query_task = Job(whether_move, 60.0)
+updater.job_queue.put(query_task, next_t=0.0)
 
 updater.start_polling()
 updater.idle()
