@@ -20,24 +20,33 @@ who_care = set()
 
 
 def locate():
-    page = requests.get(arg.url).text
+    resq = requests.get(arg.url)
+
+    # NOTE: force UTF-8 for Blink
+    resq.encoding = 'UTF-8'
+    page = resq.text
     soup = BeautifulSoup(page, 'html.parser')
+    name = None
     for div in soup.body.div.div.div.find_all('div'):
+        match = re.match("(.+)在(.+)吗？", div.h2.contents[0])
+        name = match.group(1)
         if div.h1.contents[0] == "在呢！":
-            place = re.match("团长在(.+)吗？", div.h2.contents[0]).group(1)
-            return place
+            place = match.group(2)
+            return name, place
+    else:
+        return name, None
 
 
 def whether_move(bot, job):
-    place = locate()
+    name, place = locate()
     global last_place
     if place != last_place:
         if place is None and last_place is not None:
-            text = '大鹰离开了{}。'.format(last_place)
+            text = '{}离开了{}。'.format(name, last_place)
         elif place is not None and last_place is None:
-            text = '大鹰到了{}。'.format(place)
+            text = '{}到了{}。'.format(name, place)
         else:
-            text = '大鹰离开了{}并且瞬间到达了{}，快问他怎么做到的。'.format(last_place, place)
+            text = '{}离开了{}并且瞬间到达了{}，快问他怎么做到的。'.format(name, last_place, place)
         while True:
             try:
                 caring = who_care.pop()
@@ -57,7 +66,7 @@ def start(bot, update):
 
 
 def where(bot, update):
-    place = locate()
+    _, place = locate()
     if place is not None:
         bot.sendMessage(update.message.chat_id,
                         text="在{}呢。".format(place))
